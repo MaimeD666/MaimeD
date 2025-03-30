@@ -1,0 +1,646 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MaimeD6 - Accept Your Death¿</title>
+    <!-- Подключаем "кровавый" шрифт -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Metal+Mania&display=swap" rel="stylesheet">
+    <style>
+        /* Сброс стилей и базовые настройки */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none;
+        }
+
+        body {
+            background-color: #0a0a0a;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            position: relative;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Кровавый фон с анимацией */
+        .bg-blood {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><defs><filter id="noise" x="0%" y="0%" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0"/></filter></defs><rect width="100%" height="100%" filter="url(%23noise)"/></svg>');
+            opacity: 0.12;
+            z-index: -1;
+        }
+
+        .blood-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            background: radial-gradient(circle, rgba(140,0,0,0.2) 0%, rgba(0,0,0,0.3) 100%);
+            z-index: 1;
+        }
+
+        /* Контейнер для содержимого по центру */
+        .container {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        /* Логотип игры */
+        .logo {
+            margin-bottom: 5rem;
+            text-align: center;
+            animation: pulse 3s infinite;
+        }
+
+        .logo h1 {
+            font-family: 'Creepster', cursive;
+            font-size: 6.5rem;
+            font-weight: 400;
+            letter-spacing: 3px;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(200, 0, 0, 0.7), 
+                        0 0 40px rgba(150, 0, 0, 0.5);
+            position: relative;
+            transform: rotate(-2deg);
+            text-transform: uppercase;
+            line-height: 0.9;
+        }
+
+        .logo h1::before {
+            content: 'MaimeD6';
+            position: absolute;
+            top: 0;
+            left: 0;
+            color: rgba(200, 0, 0, 0.8);
+            clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
+            animation: glitch 3s infinite;
+        }
+
+        .logo h1::after {
+            content: 'MaimeD6';
+            position: absolute;
+            top: 0;
+            left: 0;
+            color: rgba(150, 0, 0, 0.8);
+            clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%);
+            animation: glitch 2.7s infinite reverse;
+        }
+
+        /* Кровавые капли на логотипе */
+        .logo h1 .blood-drip {
+            position: absolute;
+            background-color: #900;
+            width: 3px;
+            height: 30px;
+            border-radius: 0 0 3px 3px;
+            bottom: -30px;
+            animation: blood-drip 4s infinite;
+        }
+
+        .tagline {
+            font-family: 'Metal Mania', cursive;
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            opacity: 0.9;
+            margin-top: 2rem;
+            color: #cc0000;
+            transform: rotate(0.5deg);
+        }
+        
+        .inverted-question {
+            display: inline-block;
+            transform: rotate(180deg);
+        }
+
+        /* Анимированная кнопка Play */
+        .play-btn {
+            background: linear-gradient(45deg, #700000, #900000);
+            border: 3px solid #500;
+            border-radius: 50%;
+            padding: 0;
+            width: 250px;
+            height: 250px;
+            font-family: 'Creepster', cursive;
+            font-size: 3.2rem;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0,0,0,0.8), 0 0 20px #f00;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(150, 0, 0, 0.8), 
+                        0 0 30px rgba(150, 0, 0, 0.4),
+                        inset 0 0 30px rgba(0, 0, 0, 0.6);
+            transition: transform 0.2s, box-shadow 0.3s, filter 0.3s;
+            animation: pulsate 3s infinite alternate, shake 10s infinite;
+        }
+
+        /* Трещины на кнопке */
+        .play-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M50,30 L60,10 M40,20 L30,5 M70,50 L95,45 M60,70 L80,85 M30,60 L10,80 M40,50 L20,40" stroke="rgba(0,0,0,0.4)" stroke-width="1" fill="none" /></svg>');
+            background-size: cover;
+            opacity: 0.5;
+            mix-blend-mode: overlay;
+        }
+        
+        /* Кровавая текстура */
+        .play-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,100,100,0.15), transparent);
+            transform: rotate(45deg);
+            animation: shine 4s infinite;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.05);
+            filter: brightness(1.2) contrast(1.2);
+            box-shadow: 0 0 25px rgba(200, 0, 0, 0.9), 
+                        0 0 50px rgba(150, 0, 0, 0.5),
+                        inset 0 0 40px rgba(200, 0, 0, 0.4);
+        }
+
+        .play-btn:active {
+            transform: scale(0.98);
+        }
+        
+        /* Пульсирующие брызги крови вокруг кнопки */
+        .play-btn-blood-splash {
+            position: absolute;
+            top: calc(50% - 125px);
+            left: calc(50% - 125px);
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .play-btn-blood-splash span {
+            position: absolute;
+            background-color: #900;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(45deg);
+            filter: blur(2px);
+            opacity: 0;
+            animation: splash-animate 3s linear infinite;
+        }
+        
+        @keyframes splash-animate {
+            0% {
+                transform: rotate(45deg) translateY(0) scale(0);
+                opacity: 0.7;
+            }
+            100% {
+                transform: rotate(45deg) translateY(200px) scale(1.5);
+                opacity: 0;
+            }
+        }
+        
+        /* Дрожание кнопки */
+        @keyframes shake {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            10% { transform: translate(-1px, -1px) rotate(-0.5deg); }
+            20% { transform: translate(1px, 0) rotate(0.5deg); }
+            30% { transform: translate(1px, 1px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(0.5deg); }
+            50% { transform: translate(-1px, 1px) rotate(-0.5deg); }
+            60% { transform: translate(-1px, 1px) rotate(0deg); }
+            70% { transform: translate(1px, 1px) rotate(-0.5deg); }
+            80% { transform: translate(-1px, -1px) rotate(0.5deg); }
+            90% { transform: translate(1px, -1px) rotate(0deg); }
+        }
+
+        /* Анимация капель крови */
+        .blood-drop {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #900;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(45deg);
+            opacity: 0;
+            z-index: 0;
+            filter: blur(1px);
+            animation: drop linear forwards;
+        }
+
+        /* Кастомный курсор */
+        .custom-cursor {
+            position: fixed;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+        }
+
+        .cursor-outer {
+            border: 2px solid rgba(200, 0, 0, 0.8);
+            animation: pulse-cursor 2s infinite;
+            width: 40px;
+            height: 40px;
+        }
+
+        .cursor-inner {
+            background-color: rgba(200, 0, 0, 0.5);
+            width: 8px;
+            height: 8px;
+        }
+
+        /* Анимация пульсации */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        @keyframes pulsate {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.08); }
+        }
+
+        @keyframes shine {
+            0% { left: -100%; opacity: 0; }
+            20% { opacity: 0.8; }
+            100% { left: 100%; opacity: 0; }
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-3px, 3px); }
+            40% { transform: translate(-3px, -3px); }
+            60% { transform: translate(3px, 3px); }
+            80% { transform: translate(3px, -3px); }
+        }
+
+        @keyframes drop {
+            0% {
+                opacity: 1;
+                top: -50px;
+            }
+            100% {
+                opacity: 0;
+                top: 100%;
+            }
+        }
+
+        @keyframes pulse-cursor {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.3; }
+        }
+        
+        @keyframes blood-drip {
+            0% { height: 0; opacity: 0; }
+            20% { height: 10px; opacity: 0.8; }
+            40% { height: 30px; opacity: 0.8; }
+            70% { height: 60px; opacity: 0.8; }
+            100% { height: 100px; opacity: 0; }
+        }
+
+        /* Экран загрузки */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+
+        #loading-screen.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .loader {
+            width: 100px;
+            height: 100px;
+            border: 5px solid #333;
+            border-top: 5px solid #900;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Игровой iframe */
+        #game-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            z-index: 200;
+            display: none;
+        }
+
+        #game-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        /* Скрываем элементы интерфейса Unity WebGL */
+        #game-container iframe {
+            width: 100% !important;
+            height: 100% !important;
+            border: none !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            z-index: 9999 !important;
+        }
+        
+        /* Агрессивно скрываем все дополнительные элементы Unity */
+        #unity-container,
+        #unity-canvas,
+        #unity-loading-bar,
+        #unity-logo,
+        #unity-progress-bar-empty,
+        #unity-progress-bar-full,
+        #unity-footer,
+        #unity-webgl-logo,
+        #unity-build-title,
+        #unity-fullscreen-button,
+        .webgl-content #unityContainer,
+        .webgl-content .logo,
+        .webgl-content .footer,
+        .webgl-content .fullscreen {
+            border: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        /* Скрываем окно с кнопкой полноэкранного режима */
+        #game-container iframe ~ div,
+        #game-container > div:not(iframe),
+        #game-container iframe + div,
+        .fullscreen {
+            opacity: 0 !important;
+            pointer-events: none !important;
+            display: none !important;
+            visibility: hidden !important;
+        }
+        
+        /* Принудительное полноэкранное отображение */
+        .unity-desktop #unity-canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Фоновые слои -->
+    <div class="bg-blood"></div>
+    <div class="blood-overlay"></div>
+
+    <!-- Кастомный курсор -->
+    <div class="custom-cursor cursor-outer"></div>
+    <div class="custom-cursor cursor-inner"></div>
+
+    <!-- Основной контент -->
+    <div class="container">
+        <div class="logo">
+            <h1 id="logo-text">MaimeD6</h1>
+            <p class="tagline">accept your death<span class="inverted-question">?</span></p>
+        </div>
+
+        <!-- Контейнер для кнопки с эффектом брызг крови -->
+        <div style="position: relative;">
+            <div class="play-btn-blood-splash" id="blood-splash-container"></div>
+            <button class="play-btn" id="play-button">PLAY</button>
+        </div>
+    </div>
+
+    <!-- Экран загрузки -->
+    <div id="loading-screen">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Контейнер для игры с полноэкранной конфигурацией -->
+    <div id="game-container">
+        <!-- Добавляем скрытый стиль для внедрения в iframe -->
+        <style id="unity-override-styles">
+            /* Стили для внедрения в iframe для скрытия элементов Unity */
+            body { margin: 0 !important; overflow: hidden !important; background: #000 !important; cursor: none !important; }
+            #unity-container { width: 100% !important; height: 100% !important; }
+            #unity-canvas { width: 100% !important; height: 100% !important; cursor: none !important; }
+            .unity-mobile #unity-canvas { width: 100% !important; height: 100% !important; }
+            .webgl-content { position: absolute !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; }
+            #unity-footer, #unity-webgl-logo, #unity-build-title, .webgl-content .logo, .webgl-content .footer { display: none !important; }
+            .webgl-content .fullscreen { display: none !important; }
+            #unity-loading-bar { display: none !important; }
+            #unity-fullscreen-button, #entryPoint, #gameContainer { position: absolute !important; width: 100% !important; height: 100% !important; }
+            canvas { width: 100% !important; height: 100% !important; cursor: none !important; }
+            * { cursor: none !important; }
+        </style>
+        <iframe id="game-iframe" frameborder="0" allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope; microphone; camera" allowfullscreen></iframe>
+    </div>
+
+    <script>
+        // Кастомный курсор
+        const cursorOuter = document.querySelector('.cursor-outer');
+        const cursorInner = document.querySelector('.cursor-inner');
+
+        document.addEventListener('mousemove', (e) => {
+            cursorOuter.style.left = e.clientX + 'px';
+            cursorOuter.style.top = e.clientY + 'px';
+            cursorInner.style.left = e.clientX + 'px';
+            cursorInner.style.top = e.clientY + 'px';
+        });
+
+        // Функция для скрытия кастомного курсора
+        function hideCustomCursor() {
+            const customCursors = document.querySelectorAll('.custom-cursor');
+            customCursors.forEach(cursor => {
+                cursor.style.display = 'none';
+            });
+        }
+
+        // Анимированные капли крови
+        function createBloodDrop() {
+            const drop = document.createElement('div');
+            drop.classList.add('blood-drop');
+            
+            // Случайная позиция и размер
+            const size = Math.random() * 15 + 5;
+            const left = Math.random() * window.innerWidth;
+            
+            drop.style.left = `${left}px`;
+            drop.style.width = `${size}px`;
+            drop.style.height = `${size}px`;
+            drop.style.opacity = Math.random() * 0.7 + 0.3;
+            drop.style.animationDuration = `${Math.random() * 3 + 2}s`;
+            
+            document.body.appendChild(drop);
+            
+            // Удаляем каплю после завершения анимации
+            setTimeout(() => {
+                drop.remove();
+            }, 5000);
+        }
+
+        // Создаем капли крови каждые 300 мс
+        setInterval(createBloodDrop, 300);
+        
+        // Создаем брызги крови вокруг кнопки Play
+        function createBloodSplashes() {
+            const splashContainer = document.getElementById('blood-splash-container');
+            splashContainer.innerHTML = ''; // Очищаем предыдущие брызги
+            
+            const numSplashes = 15; // Количество брызг
+            
+            for (let i = 0; i < numSplashes; i++) {
+                const splash = document.createElement('span');
+                
+                // Случайный размер брызги
+                const size = Math.random() * 10 + 5;
+                
+                // Случайный угол расположения вокруг кнопки
+                const angle = Math.random() * 360;
+                const radius = 125 + Math.random() * 25; // Расстояние от центра кнопки
+                
+                // Преобразуем полярные координаты в декартовы
+                const x = radius * Math.cos(angle * Math.PI / 180);
+                const y = radius * Math.sin(angle * Math.PI / 180);
+                
+                // Случайная задержка анимации
+                const delay = Math.random() * 2;
+                
+                splash.style.width = `${size}px`;
+                splash.style.height = `${size}px`;
+                splash.style.left = `calc(50% + ${x}px)`;
+                splash.style.top = `calc(50% + ${y}px)`;
+                splash.style.animationDelay = `${delay}s`;
+                
+                splashContainer.appendChild(splash);
+            }
+        }
+        
+        // Создаем брызги при загрузке страницы
+        window.addEventListener('load', createBloodSplashes);
+        
+        // Обновляем брызги каждые 3 секунды
+        setInterval(createBloodSplashes, 3000);
+        
+        // Запуск игры
+        const loadingScreen = document.getElementById('loading-screen');
+        const gameContainer = document.getElementById('game-container');
+        const gameIframe = document.getElementById('game-iframe');
+        const playButton = document.getElementById('play-button');
+
+        // Упрощенная функция внедрения стилей 
+        function injectStyles(iframe) {
+            try {
+                const frameDoc = iframe.contentDocument || iframe.contentWindow.document;
+                if (!frameDoc.body) {
+                    setTimeout(() => injectStyles(iframe), 100);
+                    return;
+                }
+                
+                const styleElement = frameDoc.createElement('style');
+                styleElement.textContent = document.getElementById('unity-override-styles').textContent;
+                frameDoc.head.appendChild(styleElement);
+                
+                console.log("Стили успешно внедрены в iframe");
+            } catch (e) {
+                console.error("Ошибка при внедрении стилей:", e);
+            }
+        }
+
+        // Обработчик нажатия на кнопку Play - УПРОЩЕННАЯ ВЕРСИЯ
+        playButton.addEventListener('click', function() {
+            console.log("Кнопка Play нажата");
+            
+            // Скрываем кастомный курсор
+            hideCustomCursor();
+            
+            // Показываем экран загрузки
+            loadingScreen.classList.add('active');
+            
+            // Устанавливаем src для iframe
+            if (!gameIframe.src) {
+                gameIframe.src = './WebBuild/index.html';
+            }
+            
+            // Отображаем контейнер игры
+            gameContainer.style.display = 'block';
+            
+            // Обработчик загрузки iframe
+            gameIframe.onload = function() {
+                console.log("Iframe загружен");
+                
+                // Внедряем стили для скрытия курсора
+                injectStyles(gameIframe);
+                
+                // Скрываем экран загрузки через некоторое время
+                setTimeout(function() {
+                    loadingScreen.classList.remove('active');
+                }, 1000);
+            };
+        });
+
+        // Функция для переключения в полноэкранный режим
+        function requestFullscreen(element) {
+            if (element.requestFullscreen) {
+                element.requestFullscreen();
+            } else if (element.mozRequestFullScreen) {
+                element.mozRequestFullScreen();
+            } else if (element.webkitRequestFullscreen) {
+                element.webkitRequestFullscreen();
+            } else if (element.msRequestFullscreen) {
+                element.msRequestFullscreen();
+            }
+        }
+
+        // Глобальная обработка отключения правой кнопки мыши
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            return false;
+        });
+    </script>
+</body>
+</html>
