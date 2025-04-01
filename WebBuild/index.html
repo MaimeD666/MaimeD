@@ -99,7 +99,6 @@
         // performance, uncomment the following line:
         // config.devicePixelRatio = 1;
 
-
       } else {
         // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
 
@@ -114,18 +113,20 @@
       script.onload = () => {
         createUnityInstance(canvas, config, (progress) => {
           progressBarFull.style.width = 100 * progress + "%";
-              }).then((unityInstance) => {
-                loadingBar.style.display = "none";
-                fullscreenButton.onclick = () => {
-                  unityInstance.SetFullscreen(1);
-                };
-              }).catch((message) => {
-                alert(message);
-              });
-            };
+        }).then((unityInstance) => {
+          loadingBar.style.display = "none";
+          fullscreenButton.onclick = () => {
+            unityInstance.SetFullscreen(1);
+          };
+        }).catch((message) => {
+          alert(message);
+        });
+      };
 
       document.body.appendChild(script);
 
     </script>
+    <!-- Entrant-ссылка -->
+    <a target="_blank" href="https://jam.pieter.com" style="font-family: 'system-ui', sans-serif; position: fixed; bottom: -1px; right: -1px; padding: 7px; font-size: 14px; font-weight: bold; background: #fff; color: #000; text-decoration: none; z-index: 10000; border-top-left-radius: 12px; border: 1px solid #fff;">🕹️ Vibe Jam 2025</a>
   </body>
 </html>
